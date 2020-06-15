@@ -20,7 +20,9 @@ do
   QUERY=`cat <<EOT
 {
   "limit": 1, 
-  "where": {"processing": {"exists": false}}
+  "where": {"json-updated": {"lt": "$TDone"}},
+  "or": {"svrl-updated": {"lt": "$TDone"}},
+  "order": "processing ASC"
 }
 EOT`
   
