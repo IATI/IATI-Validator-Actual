@@ -14,45 +14,13 @@ do
   # Refresh a report after 48 hours (JSON is the last bit updated in the processing
   # so we check for this to select incomplete or obsolete data)
   TDone=`date -d "48 hours ago" -u --iso-8601=seconds`
+  # Restart processing if the last start was more than 1 hour ago
+  TProc=`date -d "1 hour ago" -u --iso-8601=seconds`
 
   QUERY=`cat <<EOT
 {
-{
-	"limit": 1,
-	"where": {
-		"and": [{
-				"or": [{
-						"json-updated": {
-							"exists": false
-						}
-					},
-					{
-						"json-updated": {
-							"lt": "$TDone"
-						}
-					},
-					{
-						"svrl-updated": {
-							"exists": false
-						}
-					},
-					{
-						"svrl-updated": {
-							"lt": "$TDone"
-						}
-					}
-				]
-			},
-			{
-				"or": [{
-					"processing": {
-						"exists": false
-					}
-				}]
-			}
-		]
-	},
-	"order": "downloaded ASC"
+  "limit": 1, 
+  "where": {"processing": {"exists": false}}
 }
 EOT`
   

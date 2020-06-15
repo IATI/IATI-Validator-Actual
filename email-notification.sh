@@ -33,7 +33,7 @@ if [[ -n $1 ]]; then
 
       cat <<EOF | msmtp $EMAIL
 To: $EMAIL
-From: iati-validator@data4development.nl
+From: no-reply@iatistandard.org
 Subject: Your IATI validation results are ready
 
 This is a message from the IATI Validator.

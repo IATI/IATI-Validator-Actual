@@ -19,10 +19,10 @@ basename=$1
 mkdir -p /work/space/input
 
 HTTP_STATUS=$(curl -s "$API/iati-files/$BUCKET_SRC/download/$basename.xml" -o "/work/space/input/$basename.xml" -w "%{http_code}")
-echo "$PREFIX: retrieved $basename.xml with status $HTTP_STATUS"
 
 # If available:
 if [[ $HTTP_STATUS == 200 ]]; then 
+  echo "$PREFIX: retrieved $basename.xml with status $HTTP_STATUS"
   # Make sure we process the file again by removing the target for ant
   rm -f /work/space/dest/$basename.feedback.xml
   # Run the XML check and the rules
@@ -81,8 +81,10 @@ if [[ $HTTP_STATUS == 200 ]]; then
     echo "$PREFIX: svrl for $basename is not valid XML"
   fi
 
+else
+  echo "$PREFIX: FAILED TO RETRIEVE $basename.xml with status $HTTP_STATUS"
 fi
-
+  
 # Remove the files from the local node if no second parameter given (allows to keep the artefacts for debugging)
 if [[ -z $2 ]]; then
   find /work/space -name "${basename}*" -delete
