@@ -73,12 +73,18 @@ EOT`
     NOW=`date --iso-8601=seconds`
     APIDATA="{\"processing\": \"$NOW\"}"
   
-    echo "$PREFIX: update iati-datasets $MD5 to indicate processing"
-    curl -sS -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
-    -d "$APIDATA" \
-    "$API/iati-datasets/update?where=%7B%22id%22%3A%22$DSID%22%7D"
+    #echo "$PREFIX: update iati-datasets $MD5 to indicate processing"
 
-    echo "$PREFIX: process $MD5"
+	HTTP_STATUS=$(curl -sS -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
+    -d "$APIDATA" \
+    "$API/iati-datasets/update?where=%7B%22id%22%3A%22$DSID%22%7D")
+
+    if [[ $HTTP_STATUS != 200 ]]; then
+      echo "$PREFIX: FAILED to update iati-datasets for $MD5 with status $HTTP_STATUS"
+	fi
+    
+
+    #echo "$PREFIX: process $MD5"
     ./webhook-scripts/inhouse.sh $MD5    
   fi
   

@@ -22,7 +22,7 @@ HTTP_STATUS=$(curl -s "$API/iati-files/$BUCKET_SRC/download/$basename.xml" -o "/
 
 # If available:
 if [[ $HTTP_STATUS == 200 ]]; then 
-  echo "$PREFIX: retrieved $basename.xml with status $HTTP_STATUS"
+  #echo "$PREFIX: retrieved $basename.xml with status $HTTP_STATUS"
   # Make sure we process the file again by removing the target for ant
   rm -f /work/space/dest/$basename.feedback.xml
   # Run the XML check and the rules
@@ -30,34 +30,41 @@ if [[ $HTTP_STATUS == 200 ]]; then
   
   # Store the result
   
-  echo "$PREFIX: store feedback for $basename"
-  curl -sS -F "file=@/work/space/dest/$basename.feedback.xml;type=application/xml" "$API/iati-files/$BUCKET_FB/upload"
+  #echo "$PREFIX: store feedback for $basename"
+  HTTP_STATUS=$(curl -sS -o /dev/null -F "file=@/work/space/dest/$basename.feedback.xml;type=application/xml" "$API/iati-files/$BUCKET_FB/upload" -w "%{http_code}")
+
+  if [[ $HTTP_STATUS != 200 ]]; then
+    echo "$PREFIX: FAILED to store feedback for $basename.xml with status $HTTP_STATUS"  
+  fi  
   
   FILEDATE=$(date -Iseconds -r /work/space/dest/$basename.feedback.xml)
   
   APIDATA="{\"md5\": \"$basename\", \"feedback-updated\": \"$FILEDATE\", \"feedback-version\": \"$VERSION\"}"
-  
-  echo "$PREFIX: update iati-datasets for feedback on $basename"
-  curl -sS -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
-  -d "$APIDATA" \
-  "$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D"
   
   # Run the JSON conversion
   rm -f /work/space/json/$basename.json
   ant -f build-engine.xml -Dfilemask=$basename json
   
   # Store the result
-  echo "$PREFIX: store json for $basename"
-  curl -sS -F "file=@/work/space/json/$basename.json;type=application/json" "$API/iati-files/$BUCKET_JSON/upload"
-  
+  #echo "$PREFIX: store json for $basename"
+  HTTP_STATUS=$(curl -sS -F  -o /dev/null "file=@/work/space/json/$basename.json;type=application/json" "$API/iati-files/$BUCKET_JSON/upload" -w "%{http_code}")
+
+  if [[ $HTTP_STATUS != 200 ]]; then
+    echo "$PREFIX: FAILED to upload JSON for $basename.xml with status $HTTP_STATUS"  
+  fi
+
   FILEDATE=$(date -Iseconds -r /work/space/json/$basename.json)
   
   APIDATA="{\"md5\": \"$basename\", \"json-updated\": \"$FILEDATE\", \"json-version\": \"$VERSION\"}"
   
-  echo "$PREFIX: update iati-datasets for json on $basename"
-  curl -sS -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
+  #echo "$PREFIX: update iati-datasets for json on $basename"
+  HTTP_STATUS=$(curl -sS  -o /dev/null -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
   -d "$APIDATA" \
-  "$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D"
+  "$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D" -w "%{http_code}")
+
+  if [[ $HTTP_STATUS != 200 ]]; then
+    echo "$PREFIX: FAILED to update iati-datasets JSON for $basename.xml with status $HTTP_STATUS"
+  fi
   
   # Run the SVRL conversion
   rm -f /work/space/svrl/$basename.svrl
@@ -66,17 +73,28 @@ if [[ $HTTP_STATUS == 200 ]]; then
   # Store the result
   
   if xmllint --noout /work/space/svrl/$basename.svrl 2> "/dev/null"; then
-    echo "$PREFIX: store svrl for $basename"
-    curl -sS -F "file=@/work/space/svrl/$basename.svrl;type=application/xml" "$API/iati-files/$BUCKET_SVRL/upload"
-  
+    #echo "$PREFIX: store svrl for $basename"
+    HTTP_STATUS=$(curl -sS -o /dev/null -F "file=@/work/space/svrl/$basename.svrl;type=application/xml" "$API/iati-files/$BUCKET_SVRL/upload" -w "%{http_code}")
+
+    if [[ $HTTP_STATUS != 200 ]]; then
+      echo "$PREFIX: FAILED to upload SVRL for $basename.xml with status $HTTP_STATUS"      
+    fi
+
     FILEDATE=$(date -Iseconds -r /work/space/svrl/$basename.svrl)
   
     APIDATA="{\"md5\": \"$basename\", \"svrl-updated\": \"$FILEDATE\", \"svrl-version\": \"$VERSION\"}"
   
-    echo "$PREFIX: update iati-datasets for svrl on $basename"
-    curl -sS -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
+    #echo "$PREFIX: update iati-datasets for svrl on $basename"
+    HTTP_STATUS=$(curl -sS -o /dev/null -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
     -d "$APIDATA" \
-    "$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D"
+    "$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D" -w "%{http_code}")
+
+    if [[ $HTTP_STATUS != 200 ]]; then
+      echo "$PREFIX: FAILED to update iati-datasets SVRL for $basename.xml with status $HTTP_STATUS"
+    fi
+
+    echo "$PREFIX: completed $basename"
+    
   else
     echo "$PREFIX: svrl for $basename is not valid XML"
   fi
