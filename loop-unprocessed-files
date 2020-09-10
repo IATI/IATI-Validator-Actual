@@ -3,7 +3,9 @@
 PREFIX="Loop unprocessed files"
 API=${API:-http://validator-api/api/v1}
 
-./update-data.sh
+echo $API
+
+#./update-data.sh
 
 # loop forever
 while :
@@ -11,81 +13,35 @@ do
 
   # request a file to be processed
 
-  # Refresh a report after 48 hours (JSON is the last bit updated in the processing
-  # so we check for this to select incomplete or obsolete data)
-  TDone=`date -d "48 hours ago" -u --iso-8601=seconds`
-
-  QUERY=`cat <<EOT
-{
-	"limit": 1,
-	"where": {
-		"and": [{
-				"or": [{
-						"json-updated": {
-							"exists": false
-						}
-					},
-					{
-						"json-updated": {
-							"lt": "$TDone"
-						}
-					},
-					{
-						"svrl-updated": {
-							"exists": false
-						}
-					},
-					{
-						"svrl-updated": {
-							"lt": "$TDone"
-						}
-					}
-				]
-			},
-			{
-				"or": [{
-					"processing": {
-						"exists": false
-					}
-				}]
-			}
-		]
-	},
-	"order": "downloaded ASC"
-}
-EOT`
-  
   # Get (-G) a dataset with the query
-  DATASET=`curl -sS --header 'Accept: application/xml' \
-  -G --data-urlencode "filter=$QUERY" \
-  "$API/iati-datasets"`
-  
-  MD5=`echo $DATASET | xmllint --xpath '//md5/text()' -` 2> "/dev/null"
-  DSID=`echo $DATASET | xmllint --xpath '//id/text()' -` 2> "/dev/null"
+  DATASET=`curl -s $API/queue/next | python -c "import sys, json; ds = json.load(sys.stdin); print(ds['md5'] + ' ' + ds['_id'])"`
+  # THURS alter API to take ID and not MD5...get ID here and send it...make it work on stage
+  set $DATASET
+
+  MD5=$1
+  DSID=$2
   
   if [ -z $MD5 ]; then
     echo "$PREFIX: Nothing found to process, waiting"
     sleep 1m
   
   else
-    echo "$PREFIX: Found $MD5 -- start processing"
-    
-    NOW=`date --iso-8601=seconds`
-    APIDATA="{\"processing\": \"$NOW\"}"
-  
-    #echo "$PREFIX: update iati-datasets $MD5 to indicate processing"
+    echo "$PREFIX: Found $MD5 -- request processing"
+    JSON='{"id":"'
+    JSON+=$DSID
+    JSON+='"}'
 
-	HTTP_STATUS=$(curl -sS -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
-    -d "$APIDATA" \
-    "$API/iati-datasets/update?where=%7B%22id%22%3A%22$DSID%22%7D")
+    echo $JSON
 
-    if [[ $HTTP_STATUS != 200 ]]; then
+    STATUS=`curl --header "Content-Type: application/json" --request POST --data ${JSON} -o /dev/null -w "%{http_code}" $API/queue/processing`
+
+    if [[ $STATUS != 200 ]]; then
       echo "$PREFIX: FAILED to update iati-datasets for $MD5 with status $HTTP_STATUS"
-	fi
-    
-
-    #echo "$PREFIX: process $MD5"
-    ./webhook-scripts/inhouse.sh $MD5    
+      echo $STATUS
+    else
+      echo "$PREFIX: processing $MD5"
+      ./webhook-scripts/inhouse.sh $MD5  
+	  fi 
   fi
   
 done

@@ -9,3 +9,4 @@ testspace/json
 testspace/svrl
 testspace/tmp
 testspace/reports
+localenv.sh

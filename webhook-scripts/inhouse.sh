@@ -67,41 +67,43 @@ if [[ $HTTP_STATUS == 200 ]]; then
   fi
   
   # Run the SVRL conversion
-  rm -f /work/space/svrl/$basename.svrl
-  ant -f build-engine.xml -Dfilemask=$basename svrl
+  #rm -f /work/space/svrl/$basename.svrl
+  #ant -f build-engine.xml -Dfilemask=$basename svrl
   
   # Store the result
   
-  if xmllint --noout /work/space/svrl/$basename.svrl 2> "/dev/null"; then
+  #if xmllint --noout /work/space/svrl/$basename.svrl 2> "/dev/null"; then
     #echo "$PREFIX: store svrl for $basename"
-    HTTP_STATUS=$(curl -sS -o /dev/null -F "file=@/work/space/svrl/$basename.svrl;type=application/xml" "$API/iati-files/$BUCKET_SVRL/upload" -w "%{http_code}")
+    #HTTP_STATUS=$(curl -sS -o /dev/null -F "file=@/work/space/svrl/$basename.svrl;type=application/xml" "$API/iati-files/$BUCKET_SVRL/upload" -w "%{http_code}")
 
-    if [[ $HTTP_STATUS != 200 ]]; then
-      echo "$PREFIX: FAILED to upload SVRL for $basename.xml with status $HTTP_STATUS"      
-    fi
+    #if [[ $HTTP_STATUS != 200 ]]; then
+      #echo "$PREFIX: FAILED to upload SVRL for $basename.xml with status $HTTP_STATUS"      
+    #fi
 
-    FILEDATE=$(date -Iseconds -r /work/space/svrl/$basename.svrl)
+    #FILEDATE=$(date -Iseconds -r /work/space/svrl/$basename.svrl)
   
-    APIDATA="{\"md5\": \"$basename\", \"svrl-updated\": \"$FILEDATE\", \"svrl-version\": \"$VERSION\"}"
+    #APIDATA="{\"md5\": \"$basename\", \"svrl-updated\": \"$FILEDATE\", \"svrl-version\": \"$VERSION\"}"
   
     #echo "$PREFIX: update iati-datasets for svrl on $basename"
-    HTTP_STATUS=$(curl -sS -o /dev/null -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
-    -d "$APIDATA" \
-    "$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D" -w "%{http_code}")
+    #HTTP_STATUS=$(curl -sS -o /dev/null -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' \
+    #-d "$APIDATA" \
+    #"$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D" -w "%{http_code}")
 
-    if [[ $HTTP_STATUS != 200 ]]; then
-      echo "$PREFIX: FAILED to update iati-datasets SVRL for $basename.xml with status $HTTP_STATUS"
-    fi
+    #if [[ $HTTP_STATUS != 200 ]]; then
+      #echo "$PREFIX: FAILED to update iati-datasets SVRL for $basename.xml with status $HTTP_STATUS"
+    #fi
 
-    echo "$PREFIX: completed $basename"
+  
     
-  else
-    echo "$PREFIX: svrl for $basename is not valid XML"
-  fi
+  #else
+    #echo "$PREFIX: svrl for $basename is not valid XML"
+  #fi
 
 else
   echo "$PREFIX: FAILED TO RETRIEVE $basename.xml with status $HTTP_STATUS"
 fi
+
+echo "$PREFIX: completed $basename"
   
 # Remove the files from the local node if no second parameter given (allows to keep the artefacts for debugging)
 if [[ -z $2 ]]; then
