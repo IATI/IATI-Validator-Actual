@@ -3,8 +3,6 @@
 PREFIX="Loop unprocessed files"
 API=${API:-http://validator-api/api/v1}
 
-echo $API
-
 #./update-data.sh
 
 # loop forever
@@ -36,7 +34,7 @@ do
     STATUS=`curl --header "Content-Type: application/json" --request POST --data ${JSON} -o /dev/null -w "%{http_code}" $API/queue/processing`
 
     if [[ $STATUS != 200 ]]; then
-      echo "$PREFIX: FAILED to update iati-datasets for $MD5 with status $HTTP_STATUS"
+      echo "$PREFIX: FAILED to update iati-datasets to processing for $MD5 with status $HTTP_STATUS"
       echo $STATUS
     else
       echo "$PREFIX: processing $MD5"

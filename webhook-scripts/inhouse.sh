@@ -63,7 +63,7 @@ if [[ $HTTP_STATUS == 200 ]]; then
   "$API/iati-datasets/update?where=%7B%22md5%22%3A%22$basename%22%7D" -w "%{http_code}")
 
   if [[ $HTTP_STATUS != 200 ]]; then
-    echo "$PREFIX: FAILED to update iati-datasets JSON for $basename.xml with status $HTTP_STATUS"
+    echo "$PREFIX: FAILED to update json-updated iati-datasets JSON for $basename.xml with status $HTTP_STATUS"
   fi
   
   # Run the SVRL conversion
