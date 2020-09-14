@@ -4,11 +4,6 @@ IATI Data Validator
 Create data quality feedback for activity files in the
 [data standard of the International Aid Transparency Initiative](http://iatistandard.org).
 
-The IATI Validator is available for a month of testing between 12 November and 11 December.
-
-* [IATI Validator test](https://test-validator.iatistandard.org/)
-* [Q&A: New IATI Validator launch (testing phase)](https://docs.google.com/document/d/1oOdq4keBXz6Ahmn3UiFYitSiQl3p7xDK51w_VWYVVPw/edit?usp=sharing)
-
 Please provide your feedback by using the Validator Feedback form on the tool or raise issues 
 here on Github. Users who are unable to access Github or use the Validator Feedback form are 
 welcome to share their feedback by emailing support@iatistandard.org. 
@@ -16,7 +11,7 @@ welcome to share their feedback by emailing support@iatistandard.org.
 Provide feedback on specific issues
 -----------------------------------
 
-To help the Technical Team and Data4development sort through feedback efficiently, please provide 
+To help the IATI Technical Team sort through feedback efficiently, please provide 
 separate comments/issues on:
 
 * Reporting a bug (where something is not working e.g. broken links)
