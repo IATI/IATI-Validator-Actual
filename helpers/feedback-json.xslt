@@ -47,7 +47,7 @@
       <xsl:if test="not(//me:feedback[@type=('danger', 'critical')])">
         <me:feedback type="success" class="iati" id="0.0.1">
           <me:src ref="iati" versions="any"/>
-          <me:message>Congratulations! This IATI file has successfully passed validation with no errors!</me:message>
+          <me:message>Congratulations! This IATI file has successfully passed IATI XML schema validation with no errors!</me:message>
         </me:feedback>
       </xsl:if>
     </xsl:variable>
@@ -148,8 +148,16 @@
   <xsl:template match="@href">
     <string key="href">{.}</string>
   </xsl:template>
+
+  <xsl:template match="me:feedback[me:diagnostic]">
+    <!-- use the diagnostic -->
+    <map>
+      <string key="text"><xsl:apply-templates select="." mode="context"/></string>
+    </map>
+  </xsl:template>
   
   <xsl:template match="me:feedback">
+    <!-- use information from the element containing the feedback -->
     <map>
       <string key="text"><xsl:apply-templates select=".." mode="context"/></string>
     </map>

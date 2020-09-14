@@ -23,7 +23,7 @@
   </target>
 
   <target name="known-publishers">
-    <get src="http://www.dataworkbench.io/api/iati-publishers" dest="tmp/iati-publishers.json"/>
+    <get src="https://iativalidator.iatistandard.org/api/v1/iati-publishers" dest="tmp/iati-publishers.json"/>
     <xslt out="lib/iati-rulesets/var/known-publishers.xml"
       in="helpers/update-known-iati-publishers.xslt"
       style="helpers/update-known-iati-publishers.xslt"/>    
