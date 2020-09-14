@@ -11,7 +11,7 @@ welcome to share their feedback by emailing support@iatistandard.org.
 Provide feedback on specific issues
 -----------------------------------
 
-To help the Technical Team and Data4development sort through feedback efficiently, please provide 
+To help the IATI Technical Team sort through feedback efficiently, please provide 
 separate comments/issues on:
 
 * Reporting a bug (where something is not working e.g. broken links)
