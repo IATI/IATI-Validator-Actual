@@ -3,43 +3,20 @@
 PREFIX="Loop unprocessed files"
 API=${API:-http://validator-api/api/v1}
 
-#./update-data.sh
-
-# loop forever
 while :
 do
+  DATASET=`curl -s $API/queue/next | python -c "import sys, json; ds = json.load(sys.stdin); print(ds['md5'])"`
 
-  # request a file to be processed
-
-  # Get (-G) a dataset with the query
-  DATASET=`curl -s $API/queue/next | python -c "import sys, json; ds = json.load(sys.stdin); print(ds['md5'] + ' ' + ds['_id'])"`
-  # THURS alter API to take ID and not MD5...get ID here and send it...make it work on stage
   set $DATASET
 
   MD5=$1
-  DSID=$2
   
   if [ -z $MD5 ]; then
     echo "$PREFIX: Nothing found to process, waiting"
     sleep 1m
   
   else
-    echo "$PREFIX: Found $MD5 -- request processing"
-    JSON='{"id":"'
-    JSON+=$DSID
-    JSON+='"}'
-
-    echo $JSON
-
-    STATUS=`curl --header "Content-Type: application/json" --request POST --data ${JSON} -o /dev/null -w "%{http_code}" $API/queue/processing`
-
-    if [[ $STATUS != 200 ]]; then
-      echo "$PREFIX: FAILED to update iati-datasets to processing for $MD5 with status $HTTP_STATUS"
-      echo $STATUS
-    else
-      echo "$PREFIX: processing $MD5"
-      ./webhook-scripts/inhouse.sh $MD5  
-	  fi 
-  fi
-  
+    echo "$PREFIX: processing $MD5"
+    ./webhook-scripts/inhouse.sh $MD5  
+  fi  
 done
