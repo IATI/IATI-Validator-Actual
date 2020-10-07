@@ -44,14 +44,11 @@ if [[ $HTTP_STATUS == 200 ]]; then
   # Run the JSON conversion
   rm -f /work/space/json/$basename.json
   ant -f build-engine.xml -Dfilemask=$basename json
-  
+  gc
   # Store the result
   #echo "$PREFIX: store json for $basename"
-  HTTP_STATUS=$(curl -sS -F  -o /dev/null "file=@/work/space/json/$basename.json;type=application/json" "$API/iati-files/$BUCKET_JSON/upload" -w "%{http_code}")
-
-  if [[ $HTTP_STATUS != 200 ]]; then
-    echo "$PREFIX: FAILED to upload JSON for $basename.xml with status $HTTP_STATUS"  
-  fi
+  
+  curl -sS -F "file=@/work/space/json/$basename.json;type=application/json" "$API/iati-files/$BUCKET_JSON/upload"
 
   FILEDATE=$(date -Iseconds -r /work/space/json/$basename.json)
   
