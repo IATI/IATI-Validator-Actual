@@ -49,7 +49,7 @@ This will download the IATI-Rulesets, and within that, the Xspec testing library
 
 Alternatively, clone the repository and submodules in one go with
 
-`git clone --recurse-submodules https://github.com/data4development/IATI-data-validator.git`
+`git clone --recurse-submodules https://github.com/IATI/IATI-Validator-Actual.git`
 
 Building the container
 ----------------------
