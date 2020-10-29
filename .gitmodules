@@ -1,4 +1,3 @@
 [submodule "lib/iati-rulesets"]
 	path = lib/iati-rulesets
-	url = https://github.com/IATI/IATI-Rulesets.git
-	branch = master
+	url = https://github.com/data4development/IATI-Rulesets.git
