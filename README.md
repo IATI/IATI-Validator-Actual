@@ -51,8 +51,8 @@ Alternatively, clone the repository and submodules in one go with
 
 `git clone --recurse-submodules https://github.com/IATI/IATI-Validator-Actual.git`
 
-Building the container
-----------------------
+Building the container to run tests
+-----------------------------------
 
 Use the conventional docker build command:
 
@@ -61,3 +61,18 @@ Use the conventional docker build command:
 Run the test suites:
 
 `docker run --rm my_validator test`
+
+Building/Pushing the image for deployment
+---------------------------------
+
+Build Image
+
+`docker build -t iati-validator-actual:<version> .`
+
+Tag
+
+`docker tag iati-validator-actual:<version> gcr.io/iati-validator/iati-validator-actual:<version>`
+
+Push to Google Cloud Registry
+
+`docker push gcr.io/iati-validator/iati-validator-actual:<version>`
