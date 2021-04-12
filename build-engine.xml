@@ -103,8 +103,8 @@
   <target name="run_testsuites" depends="xml-check, rules, test-context, test-json, test-validator"/>
   
   <target name="test" description="Run test suites">
-    <symlink action="delete" link="/work/space"/>
-    <copy todir="/work/space">
+    <delete file="/work/space" followsymlinks="false" removenotfollowedsymlinks="true" />
+    <copy todir="/workspace">
       <fileset dir="/home/testspace"/>
     </copy>
     <antcall target="run_testsuites"/>    
