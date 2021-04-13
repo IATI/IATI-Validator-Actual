@@ -36,6 +36,12 @@
       <x:expect label="It should return root element not-an-xml-file" test="boolean(/not-an-xml-file)"/>
       <x:expect label="It should produce message 0.1.1" test="boolean(//me:feedback[@id='0.1.1'])"/>
     </x:scenario>    
+
+    <x:scenario label="If the file is not recoverable as IATI, due to a namespace error">
+      <x:context href="/work/space/dest/iati-broken-ns.feedback.xml"/>
+      <x:expect label="It should return root element not-an-xml-file" test="boolean(/not-an-xml-file)"/>
+      <x:expect label="It should produce message 0.1.1" test="boolean(//me:feedback[@id='0.1.1'])"/>
+    </x:scenario> 
   </x:scenario>      
   
   <x:scenario label="Non-IATI files: not XML at all">
