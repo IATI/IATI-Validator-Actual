@@ -41,7 +41,7 @@ This is a message from the IATI Validator.
 All files uploaded in your workspace have been validated.
 
 Your personal workspace with validation results is here:
-https://test-validator.iatistandard.org/validate/$WSID
+https://iativalidator.iatistandard.org/validate/$WSID
 
 Your personal workspace (including your email address) will be automatically deleted after 72 hours.
 
